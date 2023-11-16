@@ -24,6 +24,7 @@ func GenerateJWT(user model.User) (string, error) {
 
 	// create new token with HMAC signing method and JWT claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		// unique user id
 		"id": user.ID,
 
 		// token issued time
@@ -37,28 +38,23 @@ func GenerateJWT(user model.User) (string, error) {
 	return token.SignedString(privateKey)
 }
 
-//Helper functions to validate an extract JWT's--------------------------------------------------
-// TODO: Add Comments
-// TODO: should the CurrentUser function be moved?
+//--------------------Helper Functions: Validate and Extract JWT--------------------//
 
-// CurrentUser: retrieve authorized user and all associated entries
+// CurrentUser: retrieve authorized user and all associated entries.
 func CurrentUser(context *gin.Context) (model.User, error) {
 
-	err := ValidateJWT(context)
+	token, err := ValidateJWT(context)
 
 	if err != nil {
 		return model.User{}, err
 	}
 
-	// TODO: why not get token from ValidateJWT?
-	token, _ := getToken(context)
-
-	// retrieve the token claims initially setup when the JWT was created
+	// retrieve token claims initially setup when the JWT was created
 	claims, _ := token.Claims.(jwt.MapClaims)
 
-	// TODO: why float to unsigned int?
 	userID := uint(claims["id"].(float64))
 
+	// find user by id from the JWT map of claims
 	user, err := model.FindUserByID(userID)
 
 	if err != nil {
@@ -68,37 +64,44 @@ func CurrentUser(context *gin.Context) (model.User, error) {
 	return user, nil
 }
 
-// ValidateJWT: ensure valid token in request Authorization Header
-// TODO: try returning (*jwt.Token, error)
-func ValidateJWT(context *gin.Context) error {
+// ValidateJWT: ensure valid token in request Authorization Header.
+func ValidateJWT(context *gin.Context) (*jwt.Token, error) {
+
 	// ensure valid token in request header
 	token, err := getToken(context)
+
 	if err != nil {
-		return err
+		return &jwt.Token{}, err
 	}
 
+	// type assert claims type
 	_, ok := token.Claims.(jwt.MapClaims)
 
+	// if correct claim type and valid token return token
 	if ok && token.Valid {
-		return nil
+		return token, nil
 	}
 
-	return errors.New("invalid token provided")
+	return &jwt.Token{}, errors.New("invalid token provided")
 
 }
 
 // getToken: parse retrieved JWT string with private key.
 func getToken(context *gin.Context) (*jwt.Token, error) {
 
-	// retrieve JWT token as string
-	tokenString := getTokenFromRequest(context)
+	// retrieve JWT from request
+	tokenString, err := getTokenFromRequest(context)
+
+	if err != nil {
+		return &jwt.Token{}, err
+	}
 
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		// verify the correct signing method
+		// verify correct signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		// return privateKey if the signing method matches the expected
+		// return privateKey if signing method matches expected
 		return privateKey, nil
 	}
 
@@ -107,51 +110,49 @@ func getToken(context *gin.Context) (*jwt.Token, error) {
 	return token, err
 }
 
-// getTokenFromRequest: retrieve bearer token from Authentication Header of request
-// TODO: add an error if there was no token retrieved
-func getTokenFromRequest(context *gin.Context) string {
+// getTokenFromRequest: retrieve bearer token from Authorization Header of request.
+func getTokenFromRequest(context *gin.Context) (string, error) {
 
-	// JWT token with bearer prefix
+	// retrieve Bearer token from request Authorization Header
 	bearerToken := context.Request.Header.Get("Authorization")
 
-	// split bearer prefix and JWT
+	// split Bearer string from JWT string
 	splitToken := strings.Split(bearerToken, " ")
 
-	// if only the bearer prefix and JWT string are elements then return JWT string
+	// if Bearer string and JWT string are the only elements return JWT string
 	if len(splitToken) == 2 {
-		return splitToken[1]
+		return splitToken[1], nil
 	}
 
-	return ""
+	return "", errors.New("there was an issue retrieving JWT from request Authorization Header.")
 }
-
-//?----------------------------------------------------------------------------------------------------
 
 // JSON Web Tokens | Token Based Authentication
 
-//   - a way of performing user authentication over the internet
-//   - client sends login details to the HTTP server
+//   - perform user authentication over the internet
+//   - client sends login details to HTTP server
 //   - server generates JWT
-//   - JWT are created with a private key on the server (typically an environment variable)
-//   - the JWT is then sent to the client to be held in local storage
+//   - JWT's are created with a private key located on the HTTP server (typically an environment variable)
+//   - JWT's are sent to the client to be held in local storage
 //   - removes the need to save cookie ID's in your database
-//   - the JWT is added to the Authorization Header of future requests with a Bearer prefix in the value
-//   - the server then validates the signature of the request without the need to do database lookups
+//   - JWT's are added to the Authorization Header of future requests with a Bearer prefix
+//   - server validates signature of request without requiring database lookups
 //   - tokens are managed on the client
 
 // JWT Signing Algorithm
 
-//   - the signing method is an algorithm
+//   - signing methods are algorithms
 //   - there are many signing algorithms, HMAC being the most common
 
 // HMAC - Hashed Based Authentication Codes
 
 //   - a way of signing a JWT
-//   - signs messages by using a shared key
+//   - signs messages by using a shared key (private key)
 
 // JWT Claims
 
 //   - metadata that asserts information about the token
+//   - key / value pair part of a tokens attributes (typically a hashmap defined by the JWT package you use)
 
 // JSON Web Token Issues
 
@@ -161,8 +162,8 @@ func getTokenFromRequest(context *gin.Context) string {
 // Access Token Time-To-Live: TTL
 
 //   - the duration of a tokens lifetime (validation period)
-//   - assigned to a token during creation
-//   - once a tokens TTL has expired that token is no longer valid within the application it is trying to access
+//   - assigned to a token during creation in jwt claims
+//   - TTL expiration invalidates a token
 
 // Sessions | Session Based Authentication
 

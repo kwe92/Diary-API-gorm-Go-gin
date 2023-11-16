@@ -8,7 +8,7 @@ import (
 
 type Entry struct {
 	gorm.Model
-	Content string `gorm:"type:text" json:"content"`
+	Content string `gorm:"type:text" json:"content" binding:"required"`
 	UserID  uint
 }
 
@@ -18,7 +18,7 @@ func (entry *Entry) Save() (*Entry, error) {
 	err := database.Database.Create(&entry).Error
 
 	if err != nil {
-		return &Entry{}, nil
+		return &Entry{}, err
 	}
 	return entry, nil
 }

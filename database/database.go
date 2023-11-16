@@ -13,6 +13,7 @@ import (
 // database struct defined in gorm
 var Database *gorm.DB
 
+// Connect: connect to database
 func Connect() {
 
 	start := time.Now()
@@ -26,7 +27,7 @@ func Connect() {
 	databaseName := os.Getenv("DB_NAME")
 	port := os.Getenv("DB_PORT")
 
-	// Open Database Connectivity Data Source Name | ODBC dsn
+	// Open Database Connectivity - Data Source Name | ODBC dsn
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=US/Central", host, username, password, databaseName, port)
 
 	// open connection to postgres database

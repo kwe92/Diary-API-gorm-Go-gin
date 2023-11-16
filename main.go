@@ -1,8 +1,10 @@
 package main
 
+// TODO: review and move functions
+
 import (
-	"diary_api/controller"
 	"diary_api/database"
+	"diary_api/handler"
 	"diary_api/middleware"
 	"diary_api/model"
 	"fmt"
@@ -53,18 +55,18 @@ func SetupRouter() *gin.Engine {
 
 	publicRoutes := router.Group("/auth")
 
-	publicRoutes.POST("/register", controller.Register)
+	publicRoutes.POST("/register", handler.Register)
 
-	publicRoutes.POST("/login", controller.Login)
+	publicRoutes.POST("/login", handler.Login)
 
 	privateRoutes := router.Group("/api")
 
 	// add middleware to group
 	privateRoutes.Use(middleware.JWTAuthMiddleware())
 
-	privateRoutes.POST("/entry", controller.AddEntry)
+	privateRoutes.POST("/entry", handler.AddEntry)
 
-	privateRoutes.GET("/entry", controller.GetAllEntries)
+	privateRoutes.GET("/entry", handler.GetAllEntries)
 
 	return router
 }

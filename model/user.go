@@ -10,12 +10,13 @@ import (
 )
 
 type User struct {
-	// embed gorm.Model for associated fields
 	gorm.Model
 	Username string `gorm:"size:255;not null;unique" json:"username"`
 	Password string `gorm:"size:255;not null" json:"-"`
 	Entries  []Entry
 }
+
+//--------------------User Methods--------------------//
 
 // Save: insert user into database.
 func (user *User) Save() (*User, error) {
@@ -47,19 +48,23 @@ func (user *User) BeforeSave(*gorm.DB) error {
 
 }
 
-// ValidatePassword: validates a provided password for a given user.
+// ValidatePassword: validate provided password for a given user.
 func (user *User) ValidatePassword(password string) error {
 
 	// generate and compare hash's
 	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 }
 
-// FindUserByUsername: query database to find user with the corresponding username.
+//--------------------User Functions--------------------//
+
+// FindUserByUsername: query database to find user with corresponding username.
 func FindUserByUsername(username string) (User, error) {
+
+	// define user object to be loaded
 	var user User
 
 	// query database to find user with matching username
-	// if found load the user into the User struct defined
+	// if found load the user into the user object defined
 	err := database.Database.Where("username=?", username).Find(&user).Error
 
 	if err != nil {
@@ -69,12 +74,12 @@ func FindUserByUsername(username string) (User, error) {
 	return user, nil
 }
 
-// FindUserByID: query database to find user with the corresponding ID and extract all entries populating them into the user struct.
+// FindUserByID: query database to find user by ID
+// return user and all associated entries.
 func FindUserByID(id uint) (User, error) {
 	var user User
 
-	// TODO: test with Entries and ID lowercase
-	err := database.Database.Preload("Entries").Where("ID=?", id).Find(&user).Error
+	err := database.Database.Preload("Entries").Where("id=?", id).Find(&user).Error
 
 	if err != nil {
 		return User{}, err
@@ -96,3 +101,8 @@ func FindUserByID(id uint) (User, error) {
 // Exclude Field in JSON
 
 //   - the struct tag `json:"-"` will exclude the field from being written to JSON
+
+// Database.Preload
+
+//   - case-sensitive, the table name must be capitalized
+//   - if `unsupported relations for schema` error is encounter check capitalization of Preload
