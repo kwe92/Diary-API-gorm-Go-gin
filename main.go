@@ -3,79 +3,22 @@ package main
 // TODO: review and move functions
 
 import (
-	"diary_api/database"
-	"diary_api/handler"
-	"diary_api/middleware"
-	"diary_api/model"
+	"diary_api/router"
+	"diary_api/utility"
 	"fmt"
-	"log"
-
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	loadEnv()
-	loadDatabase()
+	utility.LoadEnv()
 
-	router := SetupRouter()
+	utility.LoadDatabase()
+
+	router := router.SetupRouter()
 
 	router.Run(":8000")
 
 	fmt.Println("Server running on port 8000")
 
-}
-
-// loadEnv: Loads environment variables.
-func loadEnv() {
-	err := godotenv.Load(".env.local")
-
-	if err != nil {
-		log.Fatal("error loading .env.local:", err)
-	}
-}
-
-// loadDatabase: loads the postgres database associated with the environment variables.
-func loadDatabase() {
-
-	database.Connect()
-
-	err := database.Database.AutoMigrate(&model.User{})
-
-	checkErr(err)
-
-	err = database.Database.AutoMigrate(&model.Entry{})
-
-	checkErr(err)
-
-}
-
-func SetupRouter() *gin.Engine {
-	router := gin.Default()
-
-	publicRoutes := router.Group("/auth")
-
-	publicRoutes.POST("/register", handler.Register)
-
-	publicRoutes.POST("/login", handler.Login)
-
-	privateRoutes := router.Group("/api")
-
-	// add middleware to group
-	privateRoutes.Use(middleware.JWTAuthMiddleware())
-
-	privateRoutes.POST("/entry", handler.AddEntry)
-
-	privateRoutes.GET("/entry", handler.GetAllEntries)
-
-	return router
-}
-
-func checkErr(err error) {
-
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 // *gorm.DB.AutoMigrate(pointer_to_a_struct_that_will_be_a_table)

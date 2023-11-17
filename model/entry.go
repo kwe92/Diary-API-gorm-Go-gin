@@ -1,8 +1,6 @@
 package model
 
 import (
-	"diary_api/database"
-
 	"gorm.io/gorm"
 )
 
@@ -13,9 +11,9 @@ type Entry struct {
 }
 
 // Save: insert entry into database.
-func (entry *Entry) Save() (*Entry, error) {
+func (entry *Entry) Save(db *gorm.DB) (*Entry, error) {
 
-	err := database.Database.Create(&entry).Error
+	err := db.Create(&entry).Error
 
 	if err != nil {
 		return &Entry{}, err

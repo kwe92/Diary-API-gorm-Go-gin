@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"diary_api/database"
 	"diary_api/model"
 	"diary_api/utility"
 	"net/http"
@@ -33,7 +34,7 @@ func AddEntry(context *gin.Context) {
 	entry.UserID = user.ID
 
 	// insert entry into the database
-	savedEntry, err := entry.Save()
+	savedEntry, err := entry.Save(database.Database)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

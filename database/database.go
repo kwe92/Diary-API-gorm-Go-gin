@@ -13,7 +13,7 @@ import (
 // database struct defined in gorm
 var Database *gorm.DB
 
-// Connect: connect to database
+// Connect: connects to database.
 func Connect() {
 
 	start := time.Now()
