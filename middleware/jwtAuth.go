@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"diary_api/helper"
+	"diary_api/utility"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
-		_, err := helper.ValidateJWT(context)
+		_, err := utility.ValidateJWT(context)
 
 		if err != nil {
 			context.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication Required"})

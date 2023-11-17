@@ -19,10 +19,10 @@ type User struct {
 //--------------------User Methods--------------------//
 
 // Save: insert user into database.
-func (user *User) Save() (*User, error) {
+func (user *User) Save(db *gorm.DB) (*User, error) {
 
 	// insert user into database if no errors are encountered
-	err := database.Database.Create(&user).Error
+	err := db.Create(&user).Error
 
 	if err != nil {
 		return &User{}, err

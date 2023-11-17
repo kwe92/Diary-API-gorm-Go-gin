@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"diary_api/helper"
 	"diary_api/model"
+	"diary_api/utility"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +22,7 @@ func AddEntry(context *gin.Context) {
 	}
 
 	// retrieve currently authenticated user from request header
-	user, err := helper.CurrentUser(context)
+	user, err := utility.CurrentUser(context)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -48,7 +48,7 @@ func AddEntry(context *gin.Context) {
 func GetAllEntries(context *gin.Context) {
 
 	// retrieve current authenticated user from request header
-	user, err := helper.CurrentUser(context)
+	user, err := utility.CurrentUser(context)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

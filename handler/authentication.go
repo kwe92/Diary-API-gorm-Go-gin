@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"diary_api/helper"
+	"diary_api/database"
 	"diary_api/model"
+	"diary_api/utility"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,7 @@ func Register(context *gin.Context) {
 	// ! should user.beforeSave be called here?
 
 	// save user to database
-	savedUser, err := user.Save()
+	savedUser, err := user.Save(database.Database)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -72,7 +73,7 @@ func Login(context *gin.Context) {
 		return
 	}
 	// generate JWT based on the user attempting to signin
-	jwt, err := helper.GenerateJWT(user)
+	jwt, err := utility.GenerateJWT(user)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
