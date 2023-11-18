@@ -11,7 +11,7 @@ import (
 
 // AddEntry: route handler to add a new entry of an authorized user
 func AddEntry(context *gin.Context) {
-	// declare expected request body
+	// declare expected request body input
 	var entry model.Entry
 
 	// unmarshal request body into struct

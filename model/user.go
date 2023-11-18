@@ -2,6 +2,7 @@ package model
 
 import (
 	"diary_api/database"
+	"fmt"
 	"html"
 	"strings"
 
@@ -58,14 +59,20 @@ func (user *User) ValidatePassword(password string) error {
 //--------------------User Functions--------------------//
 
 // FindUserByUsername: query database to find user with corresponding username.
-func FindUserByUsername(username string) (User, error) {
+func FindUserByUsername(username string, db *gorm.DB) (User, error) {
 
 	// define user object to be loaded
 	var user User
 
+	fmt.Println("\n\nUser:", user)
+
+	fmt.Println("\n\nUsername:", username)
+
 	// query database to find user with matching username
 	// if found load the user into the user object defined
-	err := database.Database.Where("username=?", username).Find(&user).Error
+	err := db.Where("username=?", username).First(&user).Error
+
+	fmt.Println("\n\nUser:", user)
 
 	if err != nil {
 		return User{}, err

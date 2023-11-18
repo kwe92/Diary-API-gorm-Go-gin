@@ -168,3 +168,4 @@ func getTokenFromRequest(context *gin.Context) (string, error) {
 // Sessions | Session Based Authentication
 
 //   - authentication state is handled on the server
+//   - authentication information must be saved and retreived from the database

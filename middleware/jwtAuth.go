@@ -20,7 +20,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			context.Abort()
 		}
 
-		// executes pending handlers inside middleware
+		// execute pending handlers inside middleware
 		context.Next()
 	}
 }
@@ -28,7 +28,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 // Middleware For Authenticated Endpoints
 
 //   - some endpoints require user authentication
-//   - requests to authenticated endpoints handled by JWT's
+//   - requests to authenticated endpoints are handled by JWT's
 //     require a bearer token in request Authorization Header
 //   - in the absence of a bearer token an error should be written to the response body
 

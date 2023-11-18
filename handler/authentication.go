@@ -4,6 +4,7 @@ import (
 	"diary_api/database"
 	"diary_api/model"
 	"diary_api/utility"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,10 +14,10 @@ import (
 // and writes details of saved user to JSON response.
 func Register(context *gin.Context) {
 
-	// define expected authentication input from request body
+	// expected authentication input from request body
 	var authInput model.AuthenticationInput
 
-	// unmarshal request body into expected authentication input
+	// unmarshal request body into expected input
 	err := context.ShouldBindJSON(&authInput)
 
 	if err != nil {
@@ -47,18 +48,24 @@ func Register(context *gin.Context) {
 // Login: validates request, locates user if exists, validates password, generates JWT and writes the token to response body.
 func Login(context *gin.Context) {
 
-	//define expected authentication input from request body
+	// define expected authentication input from request body
 	var authInput model.AuthenticationInput
 
 	// unmarshal request body into expected input
 	err := context.ShouldBindJSON(&authInput)
+
+	fmt.Println("\n\nAUTH Input:", authInput)
+
+	fmt.Println("\n\nAUTH Username:", authInput.Username)
+
+	fmt.Println("\n\nAUTH Password:", authInput.Password)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	// locate existing user by username
-	user, err := model.FindUserByUsername(authInput.Username)
+	user, err := model.FindUserByUsername(authInput.Username, database.Database)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
