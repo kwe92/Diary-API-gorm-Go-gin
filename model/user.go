@@ -30,6 +30,7 @@ func (user *User) Save(db *gorm.DB) (*User, error) {
 	return user, nil
 }
 
+// BeforeSave a gorm hook invoked before a user is saved to hash their password
 func (user *User) BeforeSave(*gorm.DB) error {
 
 	// hash password before insertion into database for security purposes
