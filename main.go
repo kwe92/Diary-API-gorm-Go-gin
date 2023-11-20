@@ -1,12 +1,12 @@
 package main
 
-// TODO: review and move functions
-
 import (
 	"diary_api/router"
 	"diary_api/utility"
 	"fmt"
 )
+
+const address = ":8080"
 
 func main() {
 	utility.LoadEnv()
@@ -15,7 +15,7 @@ func main() {
 
 	router := router.SetupRouter()
 
-	router.Run(":8000")
+	router.Run(address)
 
 	fmt.Println("Server running on port 8000")
 

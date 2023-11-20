@@ -9,19 +9,19 @@ import (
 
 // JWTAuthMiddleware: validate request JWT before request handling.
 func JWTAuthMiddleware() gin.HandlerFunc {
-	return func(context *gin.Context) {
+	return func(ctx *gin.Context) {
 
-		_, err := utility.ValidateJWT(context)
+		_, err := utility.ValidateJWT(ctx)
 
 		if err != nil {
-			context.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication Required"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication Required"})
 
 			// prevent pending handler execution
-			context.Abort()
+			ctx.Abort()
 		}
 
 		// execute pending handlers inside middleware
-		context.Next()
+		ctx.Next()
 	}
 }
 

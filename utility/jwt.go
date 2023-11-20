@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"gorm.io/gorm"
 )
 
 // convert private key string to slice of bytes
@@ -41,9 +42,9 @@ func GenerateJWT(user model.User) (string, error) {
 //--------------------Helper Functions: Validate and Extract JWT--------------------//
 
 // CurrentUser: retrieve authorized user and all associated entries.
-func CurrentUser(context *gin.Context) (model.User, error) {
+func CurrentUser(ctx *gin.Context, db *gorm.DB) (model.User, error) {
 
-	token, err := ValidateJWT(context)
+	token, err := ValidateJWT(ctx)
 
 	if err != nil {
 		return model.User{}, err
@@ -55,7 +56,7 @@ func CurrentUser(context *gin.Context) (model.User, error) {
 	userID := uint(claims["id"].(float64))
 
 	// find user by id from the JWT map of claims
-	user, err := model.FindUserByID(userID)
+	user, err := model.FindUserByID(userID, db)
 
 	if err != nil {
 		return model.User{}, err
@@ -65,10 +66,10 @@ func CurrentUser(context *gin.Context) (model.User, error) {
 }
 
 // ValidateJWT: ensure valid token in request Authorization Header.
-func ValidateJWT(context *gin.Context) (*jwt.Token, error) {
+func ValidateJWT(ctx *gin.Context) (*jwt.Token, error) {
 
 	// ensure valid token in request header
-	token, err := getToken(context)
+	token, err := getToken(ctx)
 
 	if err != nil {
 		return &jwt.Token{}, err
@@ -87,10 +88,10 @@ func ValidateJWT(context *gin.Context) (*jwt.Token, error) {
 }
 
 // getToken: parse retrieved JWT string with private key.
-func getToken(context *gin.Context) (*jwt.Token, error) {
+func getToken(ctx *gin.Context) (*jwt.Token, error) {
 
 	// retrieve JWT from request
-	tokenString, err := getTokenFromRequest(context)
+	tokenString, err := getTokenFromRequest(ctx)
 
 	if err != nil {
 		return &jwt.Token{}, err
@@ -111,10 +112,10 @@ func getToken(context *gin.Context) (*jwt.Token, error) {
 }
 
 // getTokenFromRequest: retrieve bearer token from Authorization Header of request.
-func getTokenFromRequest(context *gin.Context) (string, error) {
+func getTokenFromRequest(ctx *gin.Context) (string, error) {
 
 	// retrieve Bearer token from request Authorization Header
-	bearerToken := context.Request.Header.Get("Authorization")
+	bearerToken := ctx.Request.Header.Get("Authorization")
 
 	// split Bearer string from JWT string
 	splitToken := strings.Split(bearerToken, " ")

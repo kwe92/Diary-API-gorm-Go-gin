@@ -1,7 +1,6 @@
 package model
 
 import (
-	"diary_api/database"
 	"fmt"
 	"html"
 	"strings"
@@ -83,10 +82,10 @@ func FindUserByUsername(username string, db *gorm.DB) (User, error) {
 
 // FindUserByID: query database to find user by ID
 // return user and all associated entries.
-func FindUserByID(id uint) (User, error) {
+func FindUserByID(id uint, db *gorm.DB) (User, error) {
 	var user User
 
-	err := database.Database.Preload("Entries").Where("id=?", id).Find(&user).Error
+	err := db.Preload("Entries").Where("id=?", id).Find(&user).Error
 
 	if err != nil {
 		return User{}, err

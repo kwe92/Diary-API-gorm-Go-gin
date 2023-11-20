@@ -1,6 +1,7 @@
 package router
 
 import (
+	"diary_api/database"
 	"diary_api/handler"
 	"diary_api/middleware"
 
@@ -21,9 +22,9 @@ func SetupRouter() *gin.Engine {
 	// add middleware to group
 	privateRoutes.Use(middleware.JWTAuthMiddleware())
 
-	privateRoutes.POST("/entry", handler.AddEntry)
+	privateRoutes.POST("/entry", handler.AddEntry(database.Database))
 
-	privateRoutes.GET("/entry", handler.GetAllEntries)
+	privateRoutes.GET("/entry", handler.GetAllEntries(database.Database))
 
 	return router
 }
