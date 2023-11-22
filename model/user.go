@@ -11,6 +11,10 @@ import (
 
 type User struct {
 	gorm.Model
+	// Fname string `gorm:"size:255;not null" json:"fname"`
+	// Lname string `gorm:"size:255;not null" json:"lname"`
+	// TODO: figure out why generated column does not work
+	// FullName string `gorm:"->;type:GENERATED ALWAYS AS (concat(fname,' ',lname));"`
 	Username string `gorm:"size:255;not null;unique" json:"username"`
 	Password string `gorm:"size:255;not null" json:"-"`
 	Entries  []Entry
@@ -30,7 +34,8 @@ func (user *User) Save(db *gorm.DB) (*User, error) {
 	return user, nil
 }
 
-// BeforeSave a gorm hook invoked before a user is saved to hash their password
+// BeforeSave: gorm hook invoked before a user is inserted into the database
+// hash user password for security
 func (user *User) BeforeSave(*gorm.DB) error {
 
 	// hash password before insertion into database for security purposes
@@ -70,13 +75,11 @@ func FindUserByUsername(username string, db *gorm.DB) (User, error) {
 
 	// query database to find user with matching username
 	// if found load the user into the user object defined
-	err := db.Where("username=?", username).First(&user).Error
-
-	fmt.Println("\n\nUser:", user)
-
-	if err != nil {
+	if err := db.Where("username=?", username).First(&user).Error; err != nil {
 		return User{}, err
 	}
+
+	fmt.Println("\n\nUser:", user)
 
 	return user, nil
 }
@@ -86,10 +89,10 @@ func FindUserByUsername(username string, db *gorm.DB) (User, error) {
 func FindUserByID(id uint, db *gorm.DB) (User, error) {
 	var user User
 
-	err := db.Preload("Entries").Where("id=?", id).Find(&user).Error
+	if err := db.Preload("Entries").Where("id=?", id).First(&user).Error; err != nil {
 
-	if err != nil {
 		return User{}, err
+
 	}
 
 	return user, nil
@@ -113,3 +116,8 @@ func FindUserByID(id uint, db *gorm.DB) (User, error) {
 
 //   - case-sensitive, the table name must be capitalized
 //   - if `unsupported relations for schema` error is encounter check capitalization of Preload
+
+// gorm Hooks
+
+//   - methods you can add to a model to do pre and post proccessing
+//     before and after some database action

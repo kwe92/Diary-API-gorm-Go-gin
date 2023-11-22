@@ -31,8 +31,6 @@ func Register(ctx *gin.Context) {
 		Password: authInput.Password,
 	}
 
-	// ! should user.beforeSave be called here?
-
 	// save user to database
 	savedUser, err := user.Save(database.Database)
 
