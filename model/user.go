@@ -11,8 +11,8 @@ import (
 
 type User struct {
 	gorm.Model
-	// Fname string `gorm:"size:255;not null" json:"fname"`
-	// Lname string `gorm:"size:255;not null" json:"lname"`
+	Fname string `gorm:"size:255;not null" json:"first_name"`
+	Lname string `gorm:"size:255;not null" json:"last_name"`
 	// TODO: figure out why generated column does not work
 	// FullName string `gorm:"->;type:GENERATED ALWAYS AS (concat(fname,' ',lname));"`
 	Username string `gorm:"size:255;not null;unique" json:"username"`
