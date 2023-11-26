@@ -13,6 +13,7 @@ import (
 // database struct defined in gorm
 var Database *gorm.DB
 
+// Connect: connects to database.
 func Connect() {
 
 	start := time.Now()
@@ -26,7 +27,7 @@ func Connect() {
 	databaseName := os.Getenv("DB_NAME")
 	port := os.Getenv("DB_PORT")
 
-	// Open Database Connectivity Data Source Name | ODBC dsn
+	// Open Database Connectivity - Data Source Name | ODBC - dsn
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=US/Central", host, username, password, databaseName, port)
 
 	// open connection to postgres database
@@ -43,11 +44,11 @@ func Connect() {
 
 // ORM: Object Relational Mapper
 
-//   - convert objects in different type systems
 //   - map application domain model objects to relational database tables
 //   - convert data between incompatable type systems
 //   - removes the need to write many DDL and DML SQL statements
-//   - objects are inserted as rows in relation database tables
+//   - create relational database tables from objects in different type systems
+//   - object fields are columns and the associated data becomes the row
 //   - rows of a table can also be converted to objects
 
 // gorm
