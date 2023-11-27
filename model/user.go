@@ -11,12 +11,13 @@ import (
 
 type User struct {
 	gorm.Model
-	Fname string `gorm:"size:255;not null" json:"first_name"`
-	Lname string `gorm:"size:255;not null" json:"last_name"`
+	Fname string `gorm:"size:255;not null" json:"first_name" binding:"required"`
+	Lname string `gorm:"size:255;not null" json:"last_name" binding:"required"`
 	// TODO: figure out why generated column does not work
 	// FullName string `gorm:"->;type:GENERATED ALWAYS AS (concat(fname,' ',lname));"`
-	Username string `gorm:"size:255;not null;unique" json:"username"`
-	Password string `gorm:"size:255;not null" json:"-"`
+	Email    string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
+	Phone    string `json:"phone_number" binding:"required,e164"`
+	Password string `gorm:"size:255;not null" json:"-" binding:"required"`
 	Entries  []Entry
 }
 
@@ -47,8 +48,8 @@ func (user *User) BeforeSave(*gorm.DB) error {
 
 	user.Password = string(passwordHash)
 
-	// trim whitespace from username
-	user.Username = html.EscapeString(strings.TrimSpace(user.Username))
+	// trim whitespace from email
+	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
 
 	return nil
 
@@ -63,19 +64,17 @@ func (user *User) ValidatePassword(password string) error {
 
 //--------------------User Functions--------------------//
 
-// FindUserByUsername: query database to find user with corresponding username.
-func FindUserByUsername(username string, db *gorm.DB) (User, error) {
+// FindUserByUsername: query database to find user with corresponding email.
+func FindUserByEmail(email string, db *gorm.DB) (User, error) {
 
 	// define user object to be loaded
 	var user User
 
-	fmt.Println("\n\nUser:", user)
+	fmt.Println("\n\nUsername:", email)
 
-	fmt.Println("\n\nUsername:", username)
-
-	// query database to find user with matching username
+	// query database to find user with matching email
 	// if found load the user into the user object defined
-	if err := db.Where("username=?", username).First(&user).Error; err != nil {
+	if err := db.Where("email=?", email).First(&user).Error; err != nil {
 		return User{}, err
 	}
 

@@ -1,13 +1,18 @@
 package model
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
 type Entry struct {
-	gorm.Model
-	Content string `gorm:"type:text" json:"content" binding:"required"`
-	UserID  uint
+	ID        uint           `gorm:"primarykey" json:"-"`
+	UserID    uint           `json:"user_id"`
+	Content   string         `gorm:"type:text" json:"content" binding:"required"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index"  json:"-"`
 }
 
 // Save: insert entry into database.

@@ -18,8 +18,8 @@ func TestLogin(t *testing.T) {
 
 	var reqBuffer bytes.Buffer
 
-	authInput := model.AuthenticationInput{
-		Username: "test",
+	authInput := model.LoginInput{
+		Email:    "test@test.io",
 		Password: "test",
 	}
 

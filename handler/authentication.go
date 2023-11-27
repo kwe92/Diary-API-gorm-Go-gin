@@ -5,6 +5,7 @@ import (
 	"diary_api/model"
 	"diary_api/utility"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +16,10 @@ import (
 func Register(ctx *gin.Context) {
 
 	// expected authentication input from request body
-	var authInput model.AuthenticationInput
+	var registrationInput model.RegistrationInput
 
 	// unmarshal request body into expected input
-	err := ctx.ShouldBindJSON(&authInput)
+	err := ctx.ShouldBindJSON(&registrationInput)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -27,8 +28,11 @@ func Register(ctx *gin.Context) {
 
 	// instantiate user
 	user := model.User{
-		Username: authInput.Username,
-		Password: authInput.Password,
+		Fname:    registrationInput.Fname,
+		Lname:    registrationInput.Lname,
+		Email:    registrationInput.Email,
+		Phone:    registrationInput.Phone,
+		Password: registrationInput.Password,
 	}
 
 	// save user to database
@@ -41,29 +45,31 @@ func Register(ctx *gin.Context) {
 
 	// write saved user to response body
 	ctx.JSON(http.StatusCreated, gin.H{"user": savedUser})
+
+	log.Println("User Registered Successfully:", savedUser)
 }
 
 // Login: validates request, locates user if exists, validates password, generates JWT and writes the token to response body.
 func Login(ctx *gin.Context) {
 
 	// define expected authentication input from request body
-	var authInput model.AuthenticationInput
+	var loginInput model.LoginInput
 
 	// unmarshal request body into expected input
-	err := ctx.ShouldBindJSON(&authInput)
+	err := ctx.ShouldBindJSON(&loginInput)
 
-	fmt.Println("\n\nAUTH Input:", authInput)
+	fmt.Println("\n\nAUTH Input:", loginInput)
 
-	fmt.Println("\n\nAUTH Username:", authInput.Username)
+	fmt.Println("\n\nAUTH Email:", loginInput.Email)
 
-	fmt.Println("\n\nAUTH Password:", authInput.Password)
+	fmt.Println("\n\nAUTH Password:", loginInput.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// locate existing user by username
-	user, err := model.FindUserByUsername(authInput.Username, database.Database)
+	// locate existing user by email
+	user, err := model.FindUserByEmail(loginInput.Email, database.Database)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -71,7 +77,7 @@ func Login(ctx *gin.Context) {
 	}
 
 	// validate user password
-	err = user.ValidatePassword(authInput.Password)
+	err = user.ValidatePassword(loginInput.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
