@@ -67,6 +67,18 @@ func (entry *Entry) Update(db *gorm.DB, input UpdatedEntryInput) (*Entry, error)
 
 }
 
+// Delete: remove entry record from database
+func (entry *Entry) Delete(db *gorm.DB) (*Entry, error) {
+
+	// ? NOTE: seems to mark as deleted but remains in the database but not retrieved if DeleteAt is not null
+	if err := db.Delete(&entry).Error; err != nil {
+
+		return &Entry{}, err
+	}
+
+	return entry, nil
+}
+
 // FindEntryById: query database for entry record with given id
 func FindEntryById(db *gorm.DB, entryId uint) (Entry, error) {
 

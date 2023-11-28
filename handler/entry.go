@@ -3,6 +3,7 @@ package handler
 import (
 	"diary_api/model"
 	"diary_api/utility"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -98,6 +99,51 @@ func UpdateEntry(db *gorm.DB) gin.HandlerFunc {
 		}
 
 	}
+}
+
+// DeleteEntry: http handler that deletes a single entry in database
+func DeleteEntry(db *gorm.DB) gin.HandlerFunc {
+
+	return func(ctx *gin.Context) {
+
+		entryId, err := strconv.Atoi(ctx.Param("id"))
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// find record to delete and load record into destination struct
+		if entry, err := model.FindEntryById(db, uint(entryId)); err != nil {
+
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+
+		} else {
+
+			// call Delete method on object to delete record from database
+			if deletedEntry, err := entry.Delete(db); err != nil {
+
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+
+			} else {
+
+				log.Println("Entry Deleted:", deletedEntry)
+
+				// return deleted object with DeletedAt time
+				ctx.JSON(http.StatusOK, gin.H{"deleted_entry": gin.H{
+					"id":        deletedEntry.ID,
+					"content":   deletedEntry.Content,
+					"DeletedAt": deletedEntry.DeletedAt,
+				}})
+
+			}
+
+		}
+
+	}
+
 }
 
 // GetAllEntries: route handler that retrieves current user and returns all associated entries as a response
