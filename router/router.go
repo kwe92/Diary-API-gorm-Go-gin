@@ -24,6 +24,8 @@ func SetupRouter() *gin.Engine {
 
 	privateRoutes.POST("/entry", handler.AddEntry(database.Database))
 
+	privateRoutes.POST("/update-entry/:id", handler.UpdateEntry(database.Database))
+
 	privateRoutes.GET("/entry", handler.GetAllEntries(database.Database))
 
 	return router

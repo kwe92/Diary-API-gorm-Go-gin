@@ -12,7 +12,7 @@ import (
 )
 
 // Register: validates JSON request, creates new user,
-// and writes details of saved user to JSON response.
+// and generates a jwt for registered user and writes jwt to JSON response body.
 func Register(ctx *gin.Context) {
 
 	// expected authentication input from request body
@@ -43,8 +43,16 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
-	// write saved user to response body
-	ctx.JSON(http.StatusCreated, gin.H{"user": savedUser})
+	// generate JWT based on newlyregistered user
+	jwt, err := utility.GenerateJWT(*savedUser)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// write jwt to response body
+	ctx.JSON(http.StatusOK, gin.H{"jwt": jwt})
 
 	log.Println("User Registered Successfully:", savedUser)
 }

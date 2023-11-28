@@ -4,6 +4,7 @@ import (
 	"diary_api/model"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -71,6 +72,8 @@ func ValidateJWT(ctx *gin.Context) (*jwt.Token, error) {
 	// ensure valid token in request header
 	token, err := getToken(ctx)
 
+	log.Println("JWT token:", token)
+
 	if err != nil {
 		return &jwt.Token{}, err
 	}
@@ -119,6 +122,8 @@ func getTokenFromRequest(ctx *gin.Context) (string, error) {
 
 	// split Bearer string from JWT string
 	splitToken := strings.Split(bearerToken, " ")
+
+	log.Println("Token string:", splitToken)
 
 	// if Bearer string and JWT string are the only elements return JWT string
 	if len(splitToken) == 2 {
