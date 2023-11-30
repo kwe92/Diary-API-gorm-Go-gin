@@ -4,9 +4,9 @@ package router
 
 import (
 	"bytes"
-	"diary_api/model"
 	"encoding/json"
 	"fmt"
+	"journal_api/model"
 	"net/http"
 	"net/http/httptest"
 	"testing"

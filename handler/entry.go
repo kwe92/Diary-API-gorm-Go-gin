@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"diary_api/model"
-	"diary_api/utility"
+	"journal_api/model"
+	"journal_api/utility"
 	"log"
 	"net/http"
 	"strconv"

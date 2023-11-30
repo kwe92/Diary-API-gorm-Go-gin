@@ -1,9 +1,9 @@
 package utility
 
 import (
-	"diary_api/model"
 	"errors"
 	"fmt"
+	"journal_api/model"
 	"os"
 	"strconv"
 	"strings"

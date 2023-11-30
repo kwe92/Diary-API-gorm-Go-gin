@@ -1,9 +1,9 @@
 package router
 
 import (
-	"diary_api/database"
-	"diary_api/handler"
-	"diary_api/middleware"
+	"journal_api/database"
+	"journal_api/handler"
+	"journal_api/middleware"
 
 	"github.com/gin-gonic/gin"
 )

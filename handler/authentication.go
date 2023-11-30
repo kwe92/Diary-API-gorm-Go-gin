@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"diary_api/database"
-	"diary_api/model"
-	"diary_api/utility"
 	"fmt"
+	"journal_api/database"
+	"journal_api/model"
+	"journal_api/utility"
 	"log"
 	"net/http"
 

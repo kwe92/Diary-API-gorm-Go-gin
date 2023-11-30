@@ -1,8 +1,8 @@
 package utility
 
 import (
-	"diary_api/database"
-	"diary_api/model"
+	"journal_api/database"
+	"journal_api/model"
 	"log"
 
 	"github.com/joho/godotenv"
