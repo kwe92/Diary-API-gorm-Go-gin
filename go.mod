@@ -1,4 +1,4 @@
-module diary_api
+module journal_api
 
 go 1.21.0
 

@@ -4,9 +4,9 @@ package router
 
 import (
 	"bytes"
-	"diary_api/model"
 	"encoding/json"
 	"fmt"
+	"journal_api/model"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,8 +18,8 @@ func TestLogin(t *testing.T) {
 
 	var reqBuffer bytes.Buffer
 
-	authInput := model.AuthenticationInput{
-		Username: "test",
+	authInput := model.LoginInput{
+		Email:    "test@test.io",
 		Password: "test",
 	}
 

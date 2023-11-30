@@ -1,24 +1,25 @@
 package handler
 
 import (
-	"diary_api/database"
-	"diary_api/model"
-	"diary_api/utility"
 	"fmt"
+	"journal_api/database"
+	"journal_api/model"
+	"journal_api/utility"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Register: validates JSON request, creates new user,
-// and writes details of saved user to JSON response.
+// and generates a jwt for registered user and writes jwt to JSON response body.
 func Register(ctx *gin.Context) {
 
 	// expected authentication input from request body
-	var authInput model.AuthenticationInput
+	var registrationInput model.RegistrationInput
 
 	// unmarshal request body into expected input
-	err := ctx.ShouldBindJSON(&authInput)
+	err := ctx.ShouldBindJSON(&registrationInput)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -27,8 +28,11 @@ func Register(ctx *gin.Context) {
 
 	// instantiate user
 	user := model.User{
-		Username: authInput.Username,
-		Password: authInput.Password,
+		Fname:    registrationInput.Fname,
+		Lname:    registrationInput.Lname,
+		Email:    registrationInput.Email,
+		Phone:    registrationInput.Phone,
+		Password: registrationInput.Password,
 	}
 
 	// save user to database
@@ -39,31 +43,41 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
-	// write saved user to response body
-	ctx.JSON(http.StatusCreated, gin.H{"user": savedUser})
+	// generate JWT based on newlyregistered user
+	jwt, err := utility.GenerateJWT(*savedUser)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// write jwt to response body
+	ctx.JSON(http.StatusOK, gin.H{"jwt": jwt})
+
+	log.Println("new user registration:", &savedUser)
 }
 
 // Login: validates request, locates user if exists, validates password, generates JWT and writes the token to response body.
 func Login(ctx *gin.Context) {
 
 	// define expected authentication input from request body
-	var authInput model.AuthenticationInput
+	var loginInput model.LoginInput
 
 	// unmarshal request body into expected input
-	err := ctx.ShouldBindJSON(&authInput)
+	err := ctx.ShouldBindJSON(&loginInput)
 
-	fmt.Println("\n\nAUTH Input:", authInput)
+	fmt.Println("\n\nAUTH Input:", loginInput)
 
-	fmt.Println("\n\nAUTH Username:", authInput.Username)
+	fmt.Println("\n\nAUTH Email:", loginInput.Email)
 
-	fmt.Println("\n\nAUTH Password:", authInput.Password)
+	fmt.Println("\n\nAUTH Password:", loginInput.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// locate existing user by username
-	user, err := model.FindUserByUsername(authInput.Username, database.Database)
+	// locate existing user by email
+	user, err := model.FindUserByEmail(loginInput.Email, database.Database)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -71,7 +85,7 @@ func Login(ctx *gin.Context) {
 	}
 
 	// validate user password
-	err = user.ValidatePassword(authInput.Password)
+	err = user.ValidatePassword(loginInput.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

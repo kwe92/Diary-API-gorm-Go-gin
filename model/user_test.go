@@ -23,7 +23,7 @@ func TestSaveUser(t *testing.T) {
 	})
 
 	user := User{
-		Username: "kwe92",
+		Email:    "kwe92@gmail.com",
 		Password: "Ronin",
 	}
 

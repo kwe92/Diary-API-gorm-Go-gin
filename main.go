@@ -1,10 +1,12 @@
 package main
 
 import (
-	"diary_api/router"
-	"diary_api/utility"
 	"fmt"
+	"journal_api/router"
+	"journal_api/utility"
 )
+
+// TODO: Review function / method comments
 
 const address = ":8080"
 
