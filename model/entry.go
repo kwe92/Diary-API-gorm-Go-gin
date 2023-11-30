@@ -50,7 +50,7 @@ func (entry *Entry) Update(db *gorm.DB, input UpdatedEntryInput) (*Entry, error)
 	}
 
 	log.Printf(
-		"updated entry from: %+v to: %+v\n\n",
+		"\nupdated entry from: %+v\n\nto: %+v\n\n",
 		gin.H{
 			"id":      originalEntry.ID,
 			"content": originalEntry.Content,

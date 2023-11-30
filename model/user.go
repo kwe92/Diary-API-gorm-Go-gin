@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"html"
 	"strings"
@@ -30,6 +31,9 @@ func (user *User) Save(db *gorm.DB) (*User, error) {
 	err := db.Create(&user).Error
 
 	if err != nil {
+		if strings.Contains(err.Error(), "users_email_key") {
+			return &User{}, errors.New("a user already exists with the associated email address")
+		}
 		return &User{}, err
 	}
 	return user, nil

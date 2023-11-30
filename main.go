@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+// TODO: Review function / method comments
+
 const address = ":8080"
 
 func main() {

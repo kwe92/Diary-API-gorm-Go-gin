@@ -46,6 +46,9 @@ func AddEntry(db *gorm.DB) gin.HandlerFunc {
 
 		// write new entry to response body
 		ctx.JSON(http.StatusCreated, gin.H{"data": savedEntry})
+
+		log.Println("\nnew entry added:", *savedEntry)
+
 	}
 }
 
@@ -129,7 +132,7 @@ func DeleteEntry(db *gorm.DB) gin.HandlerFunc {
 
 			} else {
 
-				log.Println("Entry Deleted:", deletedEntry)
+				log.Println("\ndeleted entry:", *deletedEntry)
 
 				// return deleted object with DeletedAt time
 				ctx.JSON(http.StatusOK, gin.H{"deleted_entry": gin.H{
