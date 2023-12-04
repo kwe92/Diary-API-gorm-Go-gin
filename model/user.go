@@ -63,7 +63,11 @@ func (user *User) BeforeSave(*gorm.DB) error {
 func (user *User) ValidatePassword(password string) error {
 
 	// generate and compare hash's
-	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return errors.New("password incorrect")
+	}
+
+	return nil
 }
 
 //--------------------User Functions--------------------//
