@@ -14,6 +14,7 @@ type Entry struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
 	UserID    uint           `json:"user_id"`
 	Content   string         `gorm:"type:text" json:"content" binding:"required"`
+	MoodType  string         `gorm:"type:text" json:"mood_type" binding:"required"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index"  json:"-"`
