@@ -22,6 +22,10 @@ type User struct {
 	Entries  []Entry
 }
 
+type UserEmail struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
 //--------------------User Methods--------------------//
 
 // Save: insert user into database.
@@ -83,7 +87,7 @@ func FindUserByEmail(email string, db *gorm.DB) (User, error) {
 	// query database to find user with matching email
 	// if found load the user into the user object defined
 	if err := db.Where("email=?", email).First(&user).Error; err != nil {
-		return User{}, err
+		return User{}, errors.New("user not found")
 	}
 
 	fmt.Println("\n\nUser:", user)

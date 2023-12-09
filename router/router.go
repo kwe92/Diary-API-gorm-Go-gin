@@ -13,6 +13,8 @@ func SetupRouter() *gin.Engine {
 
 	publicRoutes := router.Group("/auth")
 
+	publicRoutes.POST("/available-email", handler.CheckAvailableEmail)
+
 	publicRoutes.POST("/register", handler.Register)
 
 	publicRoutes.POST("/login", handler.Login)
