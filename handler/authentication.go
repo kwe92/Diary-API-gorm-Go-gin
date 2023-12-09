@@ -103,3 +103,22 @@ func Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"jwt": jwt})
 
 }
+
+func CheckAvailableEmail(ctx *gin.Context) {
+	var userEmail model.UserEmail
+
+	if err := ctx.ShouldBindJSON(&userEmail); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	user, err := model.FindUserByEmail(userEmail.Email, database.Database)
+
+	// return error if a user was found
+	if err == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
+		return
+	}
+
+	fmt.Println("user from CheckAvailableEmail:", user)
+
+}
