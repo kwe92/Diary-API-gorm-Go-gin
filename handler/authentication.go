@@ -54,7 +54,7 @@ func Register(ctx *gin.Context) {
 	// write jwt to response body
 	ctx.JSON(http.StatusOK, gin.H{"jwt": jwt})
 
-	log.Println("new user registration:", &savedUser)
+	log.Printf("\nnew user registration: %+v\n\n", *savedUser)
 }
 
 // Login: validates request, locates user if exists, validates password, generates JWT and writes the token to response body.
