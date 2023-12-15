@@ -52,7 +52,6 @@ func AddEntry(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// TODO: finish implementation
 // UpdateEntry: http handler that updates a single entry in database
 func UpdateEntry(db *gorm.DB) gin.HandlerFunc {
 
