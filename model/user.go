@@ -100,6 +100,7 @@ func FindUserByEmail(email string, db *gorm.DB) (User, error) {
 func FindUserByID(id uint, db *gorm.DB) (User, error) {
 	var user User
 
+	// initialize user with associated entries with Preload
 	if err := db.Preload("Entries").Where("id=?", id).First(&user).Error; err != nil {
 
 		return User{}, err

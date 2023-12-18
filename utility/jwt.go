@@ -44,6 +44,7 @@ func GenerateJWT(user model.User) (string, error) {
 // CurrentUser: retrieve authorized user and all associated entries.
 func CurrentUser(ctx *gin.Context, db *gorm.DB) (model.User, error) {
 
+	// validate JWT of accessing user
 	token, err := ValidateJWT(ctx)
 
 	if err != nil {
@@ -53,6 +54,7 @@ func CurrentUser(ctx *gin.Context, db *gorm.DB) (model.User, error) {
 	// retrieve token claims initially setup when the JWT was created
 	claims, _ := token.Claims.(jwt.MapClaims)
 
+	// type assertion as float64
 	userID := uint(claims["id"].(float64))
 
 	// find user by id from the JWT map of claims

@@ -43,8 +43,8 @@ func (entry *Entry) Update(db *gorm.DB, input UpdatedEntryInput) (*Entry, error)
 
 	var result *gorm.DB
 
-	// specify model you want to perfom operations on and update record
-	if result = db.Model(entry).Updates(input); result.Error != nil {
+	// specify model you want to perfom operations on and update record | ensure you pass a new instance of the model to updates or the UpdatedAt field will not be updated
+	if result = db.Model(entry).Updates(Entry{Content: input.Content}); result.Error != nil {
 
 		return &Entry{}, result.Error
 
