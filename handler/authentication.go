@@ -51,8 +51,16 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
-	// write jwt to response body
-	ctx.JSON(http.StatusOK, gin.H{"jwt": jwt})
+	// write jwt and user to response body
+	ctx.JSON(http.StatusOK, gin.H{
+		"jwt": jwt,
+		"user": gin.H{
+			"first_name":   &savedUser.Fname,
+			"last_name":    &savedUser.Lname,
+			"email":        &savedUser.Email,
+			"phone_number": &savedUser.Phone,
+		},
+	})
 
 	log.Printf("\nnew user registration: %+v\n\n", *savedUser)
 }
@@ -99,8 +107,15 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	// write jwt to response body
-	ctx.JSON(http.StatusOK, gin.H{"jwt": jwt})
+	// write jwt and user to response body
+	ctx.JSON(http.StatusOK, gin.H{
+		"jwt": jwt,
+		"user": gin.H{
+			"first_name":   user.Fname,
+			"last_name":    user.Lname,
+			"email":        user.Email,
+			"phone_number": user.Phone,
+		}})
 
 }
 
