@@ -19,6 +19,8 @@ func SetupRouter() *gin.Engine {
 
 	publicRoutes.POST("/login", handler.Login)
 
+	// TODO rename group to something else on the backend and frontend
+
 	privateRoutes := router.Group("/api")
 
 	// add middleware to group
@@ -31,6 +33,8 @@ func SetupRouter() *gin.Engine {
 	privateRoutes.DELETE("/delete-entry/:id", handler.DeleteEntry(database.Database))
 
 	privateRoutes.GET("/entry", handler.GetAllEntries(database.Database))
+
+	privateRoutes.DELETE("/delete-account", handler.DeleteAccount(database.Database))
 
 	return router
 }

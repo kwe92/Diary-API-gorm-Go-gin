@@ -8,6 +8,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type User struct {
@@ -74,6 +75,17 @@ func (user *User) ValidatePassword(password string) error {
 	return nil
 }
 
+// Delete: PERMANENTLY delete user instance and all associated instance entries from the database.
+func (user *User) Delete(db *gorm.DB) error {
+
+	// select user by id and all associations then delete that user and all associations  permanently
+	if err := db.Unscoped().Select(clause.Associations).Delete(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //--------------------User Functions--------------------//
 
 // FindUserByUsername: query database to find user with corresponding email.
@@ -133,3 +145,8 @@ func FindUserByID(id uint, db *gorm.DB) (User, error) {
 
 //   - methods you can add to a model to do pre and post proccessing
 //     before and after some database action
+
+// Delete Single Record Instance (Entity - Row - Class - Struct) and All Associations (Instance Records - Rows that are linked)
+
+//   - db.Unscoped().Select(clause.Associations).Delete(&PointerToStructInstanceYouWouldLikeToDelete)
+//   - CAUTION: if the struct you pass in does not have a primary key a batch delete will be executed
