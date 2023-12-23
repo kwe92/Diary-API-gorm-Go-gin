@@ -36,5 +36,7 @@ func SetupRouter() *gin.Engine {
 
 	privateRoutes.DELETE("/delete-account", handler.DeleteAccount(database.Database))
 
+	privateRoutes.POST("/update-user-info", handler.UpdateUser(database.Database))
+
 	return router
 }
