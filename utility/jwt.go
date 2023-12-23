@@ -41,7 +41,7 @@ func GenerateJWT(user model.User) (string, error) {
 
 //--------------------Helper Functions: Validate and Extract JWT--------------------//
 
-// CurrentUser: retrieve authorized user and all associated entries.
+// CurrentUser: retrieve authorized user record instance as a struct with all associated entries.
 func CurrentUser(ctx *gin.Context, db *gorm.DB) (model.User, error) {
 
 	// validate JWT of accessing user
