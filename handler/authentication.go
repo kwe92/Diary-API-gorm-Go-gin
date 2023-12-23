@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // Register: validates JSON request, creates new user,
@@ -118,31 +117,6 @@ func Login(ctx *gin.Context) {
 			"phone_number": user.Phone,
 		}})
 
-}
-
-// DeleteAccount: delete the currently authenticated user
-func DeleteAccount(db *gorm.DB) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-		// retrieve currently authenticated user instance as a Struct from the database using the request header information (jwt)
-		user, err := utility.CurrentUser(ctx, db)
-
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		// Delete user instance and association instances from database permanently
-		if err := user.Delete(db); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		log.Println("\ndeleted account:", user.Email)
-
-		ctx.JSON(http.StatusOK, gin.H{"deleted user": user.Email})
-
-	}
 }
 
 // CheckAvailableEmail: checks database for available email

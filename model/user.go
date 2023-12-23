@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"log"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -21,6 +23,14 @@ type User struct {
 	Phone    string `json:"phone_number" binding:"required,e164"`
 	Password string `gorm:"size:255;not null" json:"-" binding:"required"`
 	Entries  []Entry
+}
+
+type UpdatedUser struct {
+	gorm.Model
+	Fname   string `gorm:"size:255;not null" json:"first_name" binding:"required"`
+	Lname   string `gorm:"size:255;not null" json:"last_name" binding:"required"`
+	Email   string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
+	Entries []Entry
 }
 
 type UserEmail struct {
@@ -75,6 +85,44 @@ func (user *User) ValidatePassword(password string) error {
 	return nil
 }
 
+// Update: update user record instance in database
+func (user *User) Update(db *gorm.DB, updatedUser UpdatedUser) (User, error) {
+
+	originalUser := *user
+
+	var result *gorm.DB
+
+	// specify model you want to perfom operations on and update record | ensure you pass a new instance of the model to updates or the UpdatedAt field will not be updated
+	if result = db.Model(user).Updates(User{
+		Fname: updatedUser.Fname,
+		Lname: updatedUser.Lname,
+		Email: updatedUser.Email,
+	}); result.Error != nil {
+
+		return User{}, result.Error
+
+	}
+
+	log.Printf(
+		"\nupdated user data from: %+v\n\nto: %+v\n\n",
+		gin.H{
+			"first_name": originalUser.Fname,
+			"last_name":  originalUser.Lname,
+			"email":      originalUser.Email,
+		},
+		gin.H{
+			"first_name": user.Fname,
+			"last_name":  user.Lname,
+			"email":      user.Email,
+		},
+	)
+
+	log.Println("rows affected:", result.RowsAffected)
+
+	return *user, nil
+
+}
+
 // Delete: PERMANENTLY delete user instance and all associated instance entries from the database.
 func (user *User) Delete(db *gorm.DB) error {
 
@@ -112,7 +160,7 @@ func FindUserByEmail(email string, db *gorm.DB) (User, error) {
 func FindUserByID(id uint, db *gorm.DB) (User, error) {
 	var user User
 
-	// initialize user with associated entries with Preload
+	// initialize user and associated entries with Preload
 	if err := db.Preload("Entries").Where("id=?", id).First(&user).Error; err != nil {
 
 		return User{}, err
