@@ -137,6 +137,9 @@ func DeleteAccount(db *gorm.DB) gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		log.Println("\ndeleted account:", user.Email)
+
 		ctx.JSON(http.StatusOK, gin.H{"deleted user": user.Email})
 
 	}

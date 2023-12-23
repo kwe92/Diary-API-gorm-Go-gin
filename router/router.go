@@ -19,6 +19,8 @@ func SetupRouter() *gin.Engine {
 
 	publicRoutes.POST("/login", handler.Login)
 
+	// TODO rename group to something else on the backend and frontend
+
 	privateRoutes := router.Group("/api")
 
 	// add middleware to group
