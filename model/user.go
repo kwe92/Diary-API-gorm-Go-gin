@@ -30,6 +30,7 @@ type UpdatedUser struct {
 	Fname   string `gorm:"size:255;not null" json:"first_name" binding:"required"`
 	Lname   string `gorm:"size:255;not null" json:"last_name" binding:"required"`
 	Email   string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
+	Phone   string `json:"phone_number" binding:"required,e164"`
 	Entries []Entry
 }
 
@@ -97,6 +98,7 @@ func (user *User) Update(db *gorm.DB, updatedUser UpdatedUser) (User, error) {
 		Fname: updatedUser.Fname,
 		Lname: updatedUser.Lname,
 		Email: updatedUser.Email,
+		Phone: updatedUser.Phone,
 	}); result.Error != nil {
 
 		return User{}, result.Error
@@ -109,11 +111,13 @@ func (user *User) Update(db *gorm.DB, updatedUser UpdatedUser) (User, error) {
 			"first_name": originalUser.Fname,
 			"last_name":  originalUser.Lname,
 			"email":      originalUser.Email,
+			"phone":      originalUser.Phone,
 		},
 		gin.H{
 			"first_name": user.Fname,
 			"last_name":  user.Lname,
 			"email":      user.Email,
+			"phone":      user.Phone,
 		},
 	)
 
