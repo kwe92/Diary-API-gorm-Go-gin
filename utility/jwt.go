@@ -42,7 +42,7 @@ func GenerateJWT(user model.User) (string, error) {
 //--------------------Helper Functions: Validate and Extract JWT--------------------//
 
 // CurrentUser: retrieve authorized user record instance as a struct with all associated entries.
-func CurrentUser(ctx *gin.Context, db *gorm.DB) (model.User, error) {
+func CurrentUser(ctx *gin.Context, db *gorm.DB, preloadEntries bool) (model.User, error) {
 
 	// validate JWT of accessing user
 	token, err := ValidateJWT(ctx)
@@ -58,7 +58,7 @@ func CurrentUser(ctx *gin.Context, db *gorm.DB) (model.User, error) {
 	userID := uint(claims["id"].(float64))
 
 	// find user by id from the JWT map of claims
-	user, err := model.FindUserByID(userID, db)
+	user, err := model.FindUserByID(userID, db, preloadEntries)
 
 	if err != nil {
 		return model.User{}, err
