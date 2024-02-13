@@ -26,7 +26,7 @@ func AddEntry(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		// retrieve currently authenticated user from request header
-		user, err := utility.CurrentUser(ctx, db)
+		user, err := utility.CurrentUser(ctx, db, false)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -153,7 +153,7 @@ func GetAllEntries(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		// retrieve current authenticated user from request header
-		user, err := utility.CurrentUser(ctx, db)
+		user, err := utility.CurrentUser(ctx, db, true)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

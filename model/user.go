@@ -161,14 +161,23 @@ func FindUserByEmail(email string, db *gorm.DB) (User, error) {
 
 // FindUserByID: query database to find user by ID
 // return user and all associated entries.
-func FindUserByID(id uint, db *gorm.DB) (User, error) {
+func FindUserByID(id uint, db *gorm.DB, preloadEntries bool) (User, error) {
 	var user User
 
-	// initialize user and associated entries with Preload
-	if err := db.Preload("Entries").Where("id=?", id).First(&user).Error; err != nil {
+	if preloadEntries {
+		// initialize user and associated entries with Preload
+		if err := db.Preload("Entries").Where("id=?", id).First(&user).Error; err != nil {
 
-		return User{}, err
+			return User{}, err
 
+		}
+	} else {
+		// initialize user and without associated entries with Preload
+		if err := db.Where("id=?", id).First(&user).Error; err != nil {
+
+			return User{}, err
+
+		}
 	}
 
 	return user, nil

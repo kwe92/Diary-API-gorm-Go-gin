@@ -27,7 +27,7 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		// retrieve currently authenticated user instance as a Struct from the database using the request header information (jwt)
-		user, err := utility.CurrentUser(ctx, db)
+		user, err := utility.CurrentUser(ctx, db, false)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -36,16 +36,33 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 
 		// call Update method on object to update record in database
 		if updatedUser, err := user.Update(db, updatedUserInput); err != nil {
+			// if the updated email already exists respond with an error message
 			if strings.Contains(err.Error(), "duplicate key") {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": errors.New("email already exists").Error()})
 
 			} else {
+				// if any other error occurs respond with the error message received
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 
 		} else {
-			ctx.JSON(http.StatusOK, gin.H{"user": updatedUser})
+			// if the update was successful send updated user info
+
+			ctx.JSON(http.StatusOK, gin.H{"user": map[string]any{
+				"first_name":   updatedUser.Fname,
+				"last_name":    updatedUser.Lname,
+				"email":        updatedUser.Email,
+				"phone_number": updatedUser.Phone,
+			},
+			})
+
+			// ctx.JSON(http.StatusOK, gin.H{"user": updatedUser})
+
+			// first_name
+			// last_name
+			// email
+			// phone_number
 		}
 
 	}
@@ -56,7 +73,7 @@ func DeleteAccount(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		// retrieve currently authenticated user instance as a Struct from the database using the request header information (jwt)
-		user, err := utility.CurrentUser(ctx, db)
+		user, err := utility.CurrentUser(ctx, db, false)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
