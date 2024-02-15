@@ -137,8 +137,6 @@ func CheckAvailableEmail(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: return a response in the body if the user email is available
-
 	ctx.JSON(http.StatusOK, gin.H{"success": fmt.Sprintf("email %s is available", userEmail.Email)})
 
 	fmt.Println("user from CheckAvailableEmail:", user)

@@ -19,8 +19,6 @@ func SetupRouter() *gin.Engine {
 
 	publicRoutes.POST("/login", handler.Login)
 
-	// TODO rename group to something else on the backend and frontend
-
 	privateRoutes := router.Group("/api")
 
 	// add middleware to group
@@ -52,3 +50,10 @@ func SetupRouter() *gin.Engine {
 
 	return router
 }
+
+// Gin Web Framework
+
+//   - Build API's simply and quickly
+//   - easy request parsing and validation
+//   - provides the ability to group endpoints
+//   - provides the ability to add middleware to groups of endpoints

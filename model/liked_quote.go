@@ -8,8 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: Finish implementation | delete method
-
 type LikedQuote struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
 	UserID    uint           `json:"user_id"`
