@@ -26,6 +26,8 @@ func SetupRouter() *gin.Engine {
 	// add middleware to group
 	privateRoutes.Use(middleware.JWTAuthMiddleware())
 
+	// Journal Entry Endpoints
+
 	privateRoutes.POST("/entry", handler.AddEntry(database.Database))
 
 	privateRoutes.POST("/update-entry/:id", handler.UpdateEntry(database.Database))
@@ -34,9 +36,19 @@ func SetupRouter() *gin.Engine {
 
 	privateRoutes.GET("/entry", handler.GetAllEntries(database.Database))
 
+	// User Account Endpoints
+
 	privateRoutes.DELETE("/delete-account", handler.DeleteAccount(database.Database))
 
 	privateRoutes.POST("/update-user-info", handler.UpdateUser(database.Database))
+
+	// Liked Quotes Endpoints
+
+	privateRoutes.POST("/liked-quotes", handler.AddQuote(database.Database))
+
+	privateRoutes.DELETE("/delete-liked-quote/:id", handler.DeleteQuote(database.Database))
+
+	privateRoutes.GET("/liked-quotes", handler.GetAllLikedQuotes(database.Database))
 
 	return router
 }

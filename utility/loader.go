@@ -30,6 +30,10 @@ func LoadDatabase() {
 
 	checkErr(err)
 
+	err = database.Database.AutoMigrate(&model.LikedQuote{})
+
+	checkErr(err)
+
 }
 
 func checkErr(err error) {

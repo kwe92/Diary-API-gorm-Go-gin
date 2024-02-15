@@ -19,19 +19,21 @@ type User struct {
 	Lname string `gorm:"size:255;not null" json:"last_name" binding:"required"`
 	// TODO: figure out why generated column does not work
 	// FullName string `gorm:"->;type:GENERATED ALWAYS AS (concat(fname,' ',lname));"`
-	Email    string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
-	Phone    string `json:"phone_number" binding:"required,e164"`
-	Password string `gorm:"size:255;not null" json:"-" binding:"required"`
-	Entries  []Entry
+	Email       string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
+	Phone       string `json:"phone_number" binding:"required,e164"`
+	Password    string `gorm:"size:255;not null" json:"-" binding:"required"`
+	Entries     []Entry
+	LikedQuotes []LikedQuote
 }
 
 type UpdatedUser struct {
 	gorm.Model
-	Fname   string `gorm:"size:255;not null" json:"first_name" binding:"required"`
-	Lname   string `gorm:"size:255;not null" json:"last_name" binding:"required"`
-	Email   string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
-	Phone   string `json:"phone_number" binding:"required,e164"`
-	Entries []Entry
+	Fname       string `gorm:"size:255;not null" json:"first_name" binding:"required"`
+	Lname       string `gorm:"size:255;not null" json:"last_name" binding:"required"`
+	Email       string `gorm:"size:255;not null;unique" json:"email" binding:"required,email"`
+	Phone       string `json:"phone_number" binding:"required,e164"`
+	Entries     []Entry
+	LikedQuotes []LikedQuote
 }
 
 type UserEmail struct {
@@ -166,7 +168,7 @@ func FindUserByID(id uint, db *gorm.DB, preloadEntries bool) (User, error) {
 
 	if preloadEntries {
 		// initialize user and associated entries with Preload
-		if err := db.Preload("Entries").Where("id=?", id).First(&user).Error; err != nil {
+		if err := db.Preload("Entries").Preload("LikedQuotes").Where("id=?", id).First(&user).Error; err != nil {
 
 			return User{}, err
 
