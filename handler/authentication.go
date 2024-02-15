@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"journal_api/database"
 	"journal_api/model"
@@ -22,7 +23,7 @@ func Register(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&registrationInput)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 
@@ -39,7 +40,7 @@ func Register(ctx *gin.Context) {
 	savedUser, err := user.Save(database.Database)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 
@@ -47,7 +48,7 @@ func Register(ctx *gin.Context) {
 	jwt, err := utility.GenerateJWT(*savedUser)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 
@@ -81,14 +82,14 @@ func Login(ctx *gin.Context) {
 	fmt.Println("\n\nAUTH Password:", loginInput.Password)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 	// locate existing user by email
 	user, err := model.FindUserByEmail(loginInput.Email, database.Database)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 
@@ -96,14 +97,14 @@ func Login(ctx *gin.Context) {
 	err = user.ValidatePassword(loginInput.Password)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 	// generate JWT based on the user attempting to signin
 	jwt, err := utility.GenerateJWT(user)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
 		return
 	}
 
@@ -124,14 +125,15 @@ func CheckAvailableEmail(ctx *gin.Context) {
 	var userEmail model.UserEmail
 
 	if err := ctx.ShouldBindJSON(&userEmail); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utility.SendBadRequestResponse(ctx, err)
+
 	}
 
 	user, err := model.FindUserByEmail(userEmail.Email, database.Database)
 
 	// return error if a user was found
 	if err == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
+		utility.SendBadRequestResponse(ctx, errors.New("user already exists"))
 		return
 	}
 

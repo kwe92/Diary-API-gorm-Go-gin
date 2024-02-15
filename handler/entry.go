@@ -21,7 +21,7 @@ func AddEntry(db *gorm.DB) gin.HandlerFunc {
 		err := ctx.ShouldBindJSON(&entry)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
@@ -29,7 +29,7 @@ func AddEntry(db *gorm.DB) gin.HandlerFunc {
 		user, err := utility.CurrentUser(ctx, db, false)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
@@ -40,7 +40,7 @@ func AddEntry(db *gorm.DB) gin.HandlerFunc {
 		savedEntry, err := entry.Save(db)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
@@ -68,14 +68,14 @@ func UpdateEntry(db *gorm.DB) gin.HandlerFunc {
 		entryId, err := strconv.Atoi(ctx.Param("id"))
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
 		// find record to update and load record into destination struct
 		if entry, err = model.FindEntryById(db, uint(entryId)); err != nil {
 
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 
 		}
@@ -83,7 +83,7 @@ func UpdateEntry(db *gorm.DB) gin.HandlerFunc {
 		// read `deserialize` request body buffer into expected input struct
 		if err := ctx.ShouldBindJSON(&updateEntryInput); err != nil {
 
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 
 			return
 		}
@@ -91,7 +91,7 @@ func UpdateEntry(db *gorm.DB) gin.HandlerFunc {
 		// call Update method on object to update record in database
 		if updatedEntry, err := entry.Update(db, updateEntryInput); err != nil {
 
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 
 		} else {
@@ -111,14 +111,14 @@ func DeleteEntry(db *gorm.DB) gin.HandlerFunc {
 		entryId, err := strconv.Atoi(ctx.Param("id"))
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
 		// find record to delete and load record into destination struct
 		if entry, err := model.FindEntryById(db, uint(entryId)); err != nil {
 
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 
 		} else {
@@ -126,7 +126,7 @@ func DeleteEntry(db *gorm.DB) gin.HandlerFunc {
 			// call Delete method on object to delete record from database
 			if deletedEntry, err := entry.Delete(db); err != nil {
 
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				utility.SendBadRequestResponse(ctx, err)
 				return
 
 			} else {
@@ -156,7 +156,7 @@ func GetAllEntries(db *gorm.DB) gin.HandlerFunc {
 		user, err := utility.CurrentUser(ctx, db, true)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 

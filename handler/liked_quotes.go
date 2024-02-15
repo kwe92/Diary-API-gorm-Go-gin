@@ -101,7 +101,7 @@ func GetAllLikedQuotes(db *gorm.DB) gin.HandlerFunc {
 		user, err := utility.CurrentUser(ctx, db, true)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
