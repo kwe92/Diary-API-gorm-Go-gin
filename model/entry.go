@@ -88,16 +88,18 @@ func FindEntryById(db *gorm.DB, entryId uint) (Entry, error) {
 
 	notFound := "not_found"
 
-	// query with format string in where clause | initialize with not found if no record is found
+	// query with format string in where clause | initialize Entry content field with not found if no record is found
 	if err := db.Limit(1).Where("id = ?", entryId).Attrs(Entry{Content: notFound}).FirstOrInit(&entry).Error; err != nil {
 
 		return Entry{}, err
 
 	}
-	// if destinaion struct has zero-value for id return not found to client
+	// if destinaion struct has not found for content return not found error to caller
 	if entry.Content == notFound {
 		return Entry{}, errors.New(fmt.Sprintf("could not find a entry with the id: %d", entryId))
 	}
 
 	return entry, nil
 }
+
+// TODO: Notes on Attrs and FirstOrInit method
