@@ -22,7 +22,7 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 
 		// read `deserialize` request body buffer into expected input struct
 		if err := ctx.ShouldBindJSON(&updatedUserInput); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
@@ -30,7 +30,7 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 		user, err := utility.CurrentUser(ctx, db, false)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
@@ -38,11 +38,10 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 		if updatedUser, err := user.Update(db, updatedUserInput); err != nil {
 			// if the updated email already exists respond with an error message
 			if strings.Contains(err.Error(), "duplicate key") {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": errors.New("email already exists").Error()})
-
+				utility.SendBadRequestResponse(ctx, errors.New("email already exists"))
 			} else {
 				// if any other error occurs respond with the error message received
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				utility.SendBadRequestResponse(ctx, err)
 				return
 			}
 
@@ -76,13 +75,13 @@ func DeleteAccount(db *gorm.DB) gin.HandlerFunc {
 		user, err := utility.CurrentUser(ctx, db, false)
 
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
 		// Delete user instance and association instances from database permanently
 		if err := user.Delete(db); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			utility.SendBadRequestResponse(ctx, err)
 			return
 		}
 
